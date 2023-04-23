@@ -1,0 +1,24 @@
+version: "3"
+services:
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - /var/databases/mongodb/cosmocloud:/data/db
+  api:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    container_name: api
+    restart: always
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_HOSTNAME=mongodb://mongodb
+      - DATABASE_PORT=27017
+      - DATABASE_NAME=cosmocloud
+    depends_on:
+      - mongodb
