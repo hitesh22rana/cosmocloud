@@ -1,4 +1,5 @@
 from bson import ObjectId
+from enum import Enum
 
 class PyObjectId(ObjectId):
     @classmethod
@@ -15,3 +16,7 @@ class PyObjectId(ObjectId):
     def __modify_schema__(cls, field_schema):
         field_schema.update(type="string")
         
+class AccessLevel(str, Enum):
+    READ = "READ"
+    WRITE = "WRITE"
+    ADMIN = "ADMIN"

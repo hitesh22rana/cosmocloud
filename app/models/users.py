@@ -1,6 +1,7 @@
 from bson import ObjectId
 from pydantic import BaseModel, EmailStr, Field
 from typing import List
+
 from . import PyObjectId
 
 class UserBaseModel(BaseModel):

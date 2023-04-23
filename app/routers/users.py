@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, status, Body
 from bson import ObjectId
-from pymongo.errors import DuplicateKeyError
+from pymongo.errors import DuplicateKeyError, ConnectionFailure
 
 from .. lib.validators import validate_string_fields, validate_db_connection
 from .. database import connect_to_db
@@ -27,10 +27,10 @@ async def create_user(user: UserBaseModel = Body(...)):
     except DuplicateKeyError:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="User already exists")
     
-    except Exception as e:
+    except ConnectionFailure:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to create user. Error: {e}"
+            detail="Failed to create user."
         )
         
 @router.get("/", response_description="List all users", status_code=status.HTTP_200_OK, response_model=UsersResponse)
@@ -60,10 +60,10 @@ async def get_users(name: str = None, limit: int = 10, offset: int = 0):
                         
         return {"total_count": total_count, "users": result}
     
-    except Exception as e:
+    except ConnectionFailure:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get users. Error: {e}"
+            detail="Failed to get users"
         )
         
 @router.get("/{user_id_or_email}", response_description="Get a single user", status_code=status.HTTP_200_OK, response_model=UserResponse)
@@ -84,9 +84,9 @@ async def get_user(user_id_or_email: str):
                 detail="User not found"
             )
         return result
-
-    except Exception as e:
+    
+    except ConnectionFailure:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Failed to get user. Error: {e}"
+            detail="Failed to get user."
         )

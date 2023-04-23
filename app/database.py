@@ -22,7 +22,9 @@ async def connect_to_db():
         await db.users.create_index("email", unique=True)
         # Create unique index on name
         await db.organizations.create_index("name", unique=True)
+        await db.organizations.create_index("created_by", unique=True)
         
+        print(f"Connected to MongoDB server at {DATABASE_HOSTNAME}:{DATABASE_PORT}")
         return db
     except ConnectionFailure:
         print(f"Error connecting to MongoDB server at {DATABASE_HOSTNAME}:{DATABASE_PORT}")

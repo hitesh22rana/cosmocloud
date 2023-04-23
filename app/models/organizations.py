@@ -1,24 +1,13 @@
 from bson import ObjectId
 from pydantic import BaseModel, Field
 from typing import List
-from . import PyObjectId
+
+from . import PyObjectId, AccessLevel
 
 class OrganizationBaseModel(BaseModel):
     _id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     name: str = Field(..., description="Name of the organization")
-    
-    class Config:
-        allow_population_by_field_name = True
-        arbitrary_types_allowed = True
-        json_encoders = {ObjectId: str}
-        schema_extra = {
-            "example": {
-                "name": "Organization name"
-            }
-        }
-        
-class OrganizationModel(OrganizationBaseModel):
-    users: List[PyObjectId] = Field([], description="List of users in the organization")
+    created_by: PyObjectId = Field(..., description="User ID of the user who created the organization")
     
     class Config:
         allow_population_by_field_name = True
@@ -27,29 +16,76 @@ class OrganizationModel(OrganizationBaseModel):
         schema_extra = {
             "example": {
                 "name": "Organization name",
-                "users": ["5f9f1b9b9c9d1b1b8c8c8c8c"]
+                "created_by": "user_id"
             }
         }
         
-# class AccessLevel(str, Enum):
-#     READ = "READ"
-#     WRITE = "WRITE"
-#     ADMIN = "ADMIN"
-
-# class Permission(BaseModel):
-#     _id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
-#     user_id: PyObjectId = Field(default_factory=PyObjectId)
-#     organization_id: PyObjectId = Field(default_factory=PyObjectId)
-#     access_level: Dict[str, AccessLevel] = Field(...)
+class MemberPermissionModel(BaseModel):
+    _id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
+    user_id: PyObjectId = Field(...)
+    access_level: AccessLevel = Field(...)
     
-#     class Config:
-#         allow_population_by_field_name = True
-#         arbitrary_types_allowed = True
-#         json_encoders = {ObjectId: str}
-#         schema_extra = {
-#             "example": {
-#                 "user_id": "5f9f1b9b9c9d1b1b8c8c8c8c",
-#                 "organization_id": "5f9f1b9b9c9d1b1b8c8c8c8d",
-#                 "access_level": "ADMIN"
-#             }
-#         }
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+        schema_extra = {
+            "example": {
+                "user_id": "user_id",
+                "access_level": "ADMIN"
+            }
+        }
+        
+class OrganizationModel(OrganizationBaseModel):
+    members: List[MemberPermissionModel] = Field([], description="List of users in the organization")
+    
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+        schema_extra = {
+            "example": {
+                "name": "Organization name",
+                "members": ["user_id"]
+            }
+        }
+        
+class AddMemberModel(BaseModel):
+    user_id: PyObjectId = Field(...)
+    access_level: AccessLevel = Field(...)
+    
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+        schema_extra = {
+            "example": {
+                "user_id": "user_id",
+                "access_level": "ADMIN"
+            }
+        }
+        
+class UpdateMemberModel(AddMemberModel):    
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+        schema_extra = {
+            "example": {
+                "user_id": "user_id",
+                "access_level": "ADMIN"
+            }
+        }
+        
+class RemoveMemberModel(BaseModel):
+    user_id: PyObjectId = Field(...)
+    
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True
+        json_encoders = {ObjectId: str}
+        schema_extra = {
+            "example": {
+                "user_id": "user_id"
+            }
+        }
