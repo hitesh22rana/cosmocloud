@@ -12,6 +12,17 @@ router = APIRouter(
     prefix="/users",
 )
 
+"""
+    Post method for creating a new user.
+    
+    Raises:
+        HTTPException: Fields validation error
+        HTTPException: Duplicate user error
+        HTTPException: Internal server error
+    
+    Returns:
+        _type_: User
+"""
 @router.post("/", response_description="Create new user", status_code=status.HTTP_201_CREATED, response_model=UserResponse)
 async def create_user(user: UserBaseModel = Body(...)):
     db = await connect_to_db()
@@ -32,7 +43,18 @@ async def create_user(user: UserBaseModel = Body(...)):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to create user."
         )
-        
+
+"""
+    Get method for retrieving a list of users(filtered by name, and paginated i.e limit and offset)
+    
+    Raises:
+        HTTPException: No users found error
+        HTTPException: Internal server error
+    
+    Returns:
+        _type_: total_count
+        _type_: List[User]
+"""
 @router.get("/", response_description="List all users", status_code=status.HTTP_200_OK, response_model=UsersResponse)
 async def get_users(name: str = None, limit: int = 10, offset: int = 0):
     db = await connect_to_db()
@@ -66,6 +88,16 @@ async def get_users(name: str = None, limit: int = 10, offset: int = 0):
             detail="Failed to get users"
         )
         
+"""
+    Get method for retrieving an user, filtered by user_id or email.
+    
+    Raises:
+        HTTPException: User not found error
+        HTTPException: Internal server error
+    
+    Returns:
+        _type_: User
+"""     
 @router.get("/{user_id_or_email}", response_description="Get a single user", status_code=status.HTTP_200_OK, response_model=UserResponse)
 async def get_user(user_id_or_email: str):
     db = await connect_to_db()

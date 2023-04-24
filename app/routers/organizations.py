@@ -13,6 +13,19 @@ router = APIRouter(
     prefix="/organizations",
 )
 
+"""
+    Post method for creating a new organization.
+    
+    Raises:
+        HTTPException: Fields validation error
+        HTTPException: Invalid user ID error
+        HTTPException: Invalid access level error
+        HTTPException: Duplicate organization error
+        HTTPException: Internal server error
+    
+    Returns:
+        _type_: Organization
+"""
 @router.post("/", response_description="Create new organization", status_code=status.HTTP_201_CREATED, response_model=OrganizationResponse)
 async def create_organization(organization: OrganizationBaseModel = Body(...)):
     db = await connect_to_db()
@@ -53,6 +66,18 @@ async def create_organization(organization: OrganizationBaseModel = Body(...)):
             detail="Failed to create organization."
         )
         
+
+"""
+    Get method for getting a list of organizations (filtered by name, and paginated i.e limit and offset).
+    
+    Raises:
+        HTTPException: No organizations found error
+        HTTPException: Internal server error
+    
+    Returns:
+        _type_: List[Organization]
+        _type_: Organization
+"""
 @router.get("/", response_description="List all organizations", status_code=status.HTTP_200_OK, response_model=OrganizationsResponse)
 async def get_organizations(name: str = None, limit: int = 10, offset: int = 0):
     db = await connect_to_db()
@@ -86,6 +111,16 @@ async def get_organizations(name: str = None, limit: int = 10, offset: int = 0):
             detail="Failed to get organizations."
         )
         
+"""
+    Get method for retrieving an organization, filtered by ID or name.
+    
+    Raises:
+        HTTPException: Organization not found error
+        HTTPException: Internal server error
+    
+    Returns:
+        _type_: Organization
+"""
 @router.get("/{id_or_name}", response_description="Get a single organization", status_code=status.HTTP_200_OK, response_model=OrganizationResponse)
 async def get_organization(id_or_name: str):
     db = await connect_to_db()
@@ -110,7 +145,21 @@ async def get_organization(id_or_name: str):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to get organization."
         )
-        
+
+"""
+    Post method for adding a new member to an existing organization.
+    
+    Raises:
+        HTTPException: Fields validation error
+        HTTPException: Organization not found error
+        HTTPException: Invalid user ID error
+        HTTPException: Invalid access level error
+        HTTPException: Duplicate member error
+        HTTPException: Internal server error
+    
+    Returns:
+        _type_: Organization
+"""
 @router.post("/{organization_id}/members/{author_id}", response_description="Add a member to an organization", status_code=status.HTTP_200_OK, response_model=OrganizationResponse)
 async def add_user_to_organization(organization_id: str, author_id: str,  member: AddMemberModel = Body(...)):
     db = await connect_to_db()
@@ -169,7 +218,20 @@ async def add_user_to_organization(organization_id: str, author_id: str,  member
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to add user to organization."
         )
-        
+
+"""
+    Patch method for updating a member's access level.
+    
+    Raises:
+        HTTPException: Fields validation error
+        HTTPException: Organization not found error
+        HTTPException: Invalid access level error
+        HTTPException: Member not found error
+        HTTPException: Internal server error
+    
+    Returns:
+        _type_: Organization
+"""
 @router.patch("/{organization_id}/members/{author_id}", response_description="Update a member's access level", status_code=status.HTTP_200_OK, response_model=OrganizationResponse)
 async def update_user_access_level(organization_id: str, author_id: str, member: UpdateMemberModel = Body(...)):
     db = await connect_to_db()
@@ -215,7 +277,22 @@ async def update_user_access_level(organization_id: str, author_id: str, member:
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="Failed to update user access level."
         )
+        
 
+"""
+    Delete method for removing a member from an organization.
+    
+    Raises:
+        HTTPException: Fields validation error
+        HTTPException: Organization not found error
+        HTTPException: Cannot remove the creator of the organization
+        HTTPException: Invalid access level error
+        HTTPException: Member not found error
+        HTTPException: Internal server error
+    
+    Returns:
+        _type_: Organization
+"""
 @router.delete("/{organization_id}/members/{author_id}", response_description="Remove a member from an organization", status_code=status.HTTP_200_OK, response_model=OrganizationResponse)
 async def remove_user_from_organization(organization_id: str, author_id: str, member: RemoveMemberModel = Body(...)):
     db = await connect_to_db()

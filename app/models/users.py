@@ -4,6 +4,9 @@ from typing import List
 
 from . import PyObjectId
 
+"""
+Request model for creating a new user
+"""
 class UserBaseModel(BaseModel):
     _id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     name: str = Field(..., description="Name of the user")
@@ -19,7 +22,10 @@ class UserBaseModel(BaseModel):
                 "email": "jdoe@example.com",
             }
         }
-        
+
+"""
+Response model for a list of users
+"""
 class UserModel(UserBaseModel):
     organizations: List[PyObjectId] = Field([], description="List of organizations the user belongs to")
 

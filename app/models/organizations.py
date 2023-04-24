@@ -4,6 +4,9 @@ from typing import List
 
 from . import PyObjectId, AccessLevel
 
+"""
+Request model for creating a new organization
+"""
 class OrganizationBaseModel(BaseModel):
     _id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     name: str = Field(..., description="Name of the organization")
@@ -19,7 +22,10 @@ class OrganizationBaseModel(BaseModel):
                 "created_by": "user_id"
             }
         }
-        
+
+"""
+Member permission model for an organization
+"""   
 class MemberPermissionModel(BaseModel):
     _id: PyObjectId = Field(default_factory=PyObjectId, alias="_id")
     user_id: PyObjectId = Field(...)
@@ -35,7 +41,10 @@ class MemberPermissionModel(BaseModel):
                 "access_level": "ADMIN"
             }
         }
-        
+
+"""
+Organization model
+"""
 class OrganizationModel(OrganizationBaseModel):
     members: List[MemberPermissionModel] = Field([], description="List of users in the organization")
     
@@ -49,7 +58,10 @@ class OrganizationModel(OrganizationBaseModel):
                 "members": ["user_id"]
             }
         }
-        
+
+"""
+Model for new member that is to be add in an organization
+"""
 class AddMemberModel(BaseModel):
     user_id: PyObjectId = Field(...)
     access_level: AccessLevel = Field(...)
@@ -64,7 +76,10 @@ class AddMemberModel(BaseModel):
                 "access_level": "ADMIN"
             }
         }
-        
+
+"""
+Model for the member whose access level is to be updated in an organization
+""" 
 class UpdateMemberModel(AddMemberModel):    
     class Config:
         allow_population_by_field_name = True
@@ -77,6 +92,9 @@ class UpdateMemberModel(AddMemberModel):
             }
         }
         
+"""
+Model for the member that is to be removed from an organization
+"""        
 class RemoveMemberModel(BaseModel):
     user_id: PyObjectId = Field(...)
     

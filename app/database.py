@@ -7,7 +7,9 @@ DATABASE_HOSTNAME = settings.database_hostname
 DATABASE_PORT = settings.database_port
 DATABASE_NAME = settings.database_name
 
-"""Database Connection"""
+"""
+Connect to MongoDB server and return database object
+"""
 db = None
 
 async def connect_to_db():
